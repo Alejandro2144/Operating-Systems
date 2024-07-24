@@ -7,7 +7,7 @@ def load_file(folder_path):
     time_results = []
     first_file = True
     program_start_time = time.time()
-    print("Hora de inicio del programa:", time.strftime('%H:%M:%S', time.localtime(program_start_time)))
+    print("\nHora de inicio del programa:", time.strftime('%H:%M:%S', time.localtime(program_start_time)), '\n')
 
     for file_name in os.listdir(folder_path):
             file_start_time = time.time()
@@ -15,7 +15,7 @@ def load_file(folder_path):
             if first_file:
                 first_file = False
                 start_time = file_start_time
-                print("Hora de inicio de la carga del primer archivo:", time.strftime('%H:%M:%S', time.localtime(start_time)))
+                print("Hora de inicio de la carga del primer archivo:", time.strftime('%H:%M:%S', time.localtime(start_time)), '\n')
             
             file_path = os.path.join(folder_path, file_name)
             with open(file_path, 'r') as file:
@@ -26,20 +26,20 @@ def load_file(folder_path):
             file_end_time = time.time()
             total_time_file = file_end_time - file_start_time
             time_results.append(total_time_file)
-            print("Duración de la carga del archivo", total_time_file)
+            # print("Duración de la carga del archivo", total_time_file, '\n')
 
     end_time = time.time()
-    print("Hora de finalización de la carga del último archivo:", time.strftime('%H:%M:%S', time.localtime(end_time)))
+    print("Hora de finalización de la carga del último archivo:", time.strftime('%H:%M:%S', time.localtime(end_time)), '\n')
 
     total_time = end_time - start_time
-    print(f"Tiempo total del proceso: {total_time:.4f} segundos")
+    print(f"Tiempo total del proceso: {total_time:.4f} segundos", '\n')
 
-    print("\nTabla de resumen de duración de carga de archivos:")
+    print("\nTabla de resumen de duración de carga de archivos:", '\n')
     for i, duration in enumerate(time_results):
         print(f"Archivo {i+1}: {duration:.4f} segundos")
-    
+    print('\n')
     return results, total_time
 
-load_file("files")
+load_file("Project1/files")
 
 #Hola soy Diego y soy un lindo
