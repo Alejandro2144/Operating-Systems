@@ -1,45 +1,18 @@
-import os
-import time
-import csv
+import argparse
+from load_sequential import load_files_sequential
 
-def load_file(folder_path):
-    results = []
-    time_results = []
-    first_file = True
-    program_start_time = time.time()
-    print("\nHora de inicio del programa:", time.strftime('%H:%M:%S', time.localtime(program_start_time)), '\n')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Lector de datos')
+    parser.add_argument('-f', '--folder', required=True, help='Directorio en donde se encuentran los datos a procesar')
+    parser.add_argument('-s', '--single', action='store_true', help='Procesar los archivos al tiempo cada uno en procesos independientes y en un solo núcleo')
+    parser.add_argument('-m', '--multi', action='store_true', help='Procesar los archivos al tiempo cada uno en procesos independientes pero en cualquier núcleo disponible')
+    args = parser.parse_args()
 
-    for file_name in os.listdir(folder_path):
-            file_start_time = time.time()
-            # Si es el primer archivo, se guarda el tiempo de inicio
-            if first_file:
-                first_file = False
-                start_time = file_start_time
-                print("Hora de inicio de la carga del primer archivo:", time.strftime('%H:%M:%S', time.localtime(start_time)), '\n')
-            
-            file_path = os.path.join(folder_path, file_name)
-            with open(file_path, 'r') as file:
-                reader = csv.reader(file)
-                data_list = list(reader)
-                results.append(data_list)
-
-            file_end_time = time.time()
-            total_time_file = file_end_time - file_start_time
-            time_results.append(total_time_file)
-            # print("Duración de la carga del archivo", total_time_file, '\n')
-
-    end_time = time.time()
-    print("Hora de finalización de la carga del último archivo:", time.strftime('%H:%M:%S', time.localtime(end_time)), '\n')
-
-    total_time = end_time - start_time
-    print(f"Tiempo total del proceso: {total_time:.4f} segundos", '\n')
-
-    print("\nTabla de resumen de duración de carga de archivos:", '\n')
-    for i, duration in enumerate(time_results):
-        print(f"Archivo {i+1}: {duration:.4f} segundos")
-    print('\n')
-    return results, total_time
-
-load_file("Project1/files")
-
-#Hola soy Diego y soy un lindo
+    if args.single:
+        # load_file_single_core(args.folder)
+        pass
+    elif args.multi:
+        # load_file_multi_core(args.folder)
+        pass
+    else:
+        load_files_sequential(args.folder)
