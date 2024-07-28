@@ -11,7 +11,7 @@ def get_formatted_time(time_in_seconds):
     - time (float): Tiempo en segundos.
 
     Returns:
-    - formatted_time (str): Tiempo en formato de H-M-S-MS.
+    - string_output (str): Tiempo en formato de H-M-S-MS.
     """
     milliseconds = (time_in_seconds - int(time_in_seconds)) * 1000
     formatted_time = time.strftime('%H:%M:%S', time.localtime(time_in_seconds))
@@ -44,7 +44,7 @@ def process_file_secuentially(folder_path, file_name, time_results, results):
     - time_results (list): Lista enlazada con los tiempos de carga de los archivos.
 
     Returns:
-    - results (list): Lista enlazada con los datos de los archivos cargados.
+    - None
     """
 
     try:
