@@ -1,12 +1,12 @@
 import os
 import time
 import multiprocessing
-from utils import calculate_total_time, process_files, get_formatted_time
+from utils import calculate_total_time, process_files, get_formatted_time, set_cpu_affinity
 
-def load_files_sequential(folder_path):
+def load_files_single_core(folder_path):
     """
     Función que carga los archivos de un directorio y mide el tiempo de carga de cada uno
-    utilizando procesos hijos para cargar los archivos secuencialmente utilizando un solo núcleo.
+    utilizando procesos para cargar los archivos en paralelo en el mismo núcleo del programa.
 
     Args: 
     - folder_path (str): Ruta del directorio que contiene los archivos a cargar.
@@ -18,11 +18,14 @@ def load_files_sequential(folder_path):
     manager = multiprocessing.Manager()
     time_results = manager.list()
     results = manager.list()
+    processes = []
+    # core_id = 0
 
     is_first_file = True
-    program_start_time = time.time()
 
-    # print(f"\nProceso padre iniciado con PID {os.getpid()}.", '\n')
+    print(f"\nProceso padre iniciado con PID {os.getpid()}.", '\n')
+
+    program_start_time = time.time()
     print('Hora de inicio del programa: ', get_formatted_time(program_start_time), '\n')
 
     for file_name in os.listdir(folder_path):
@@ -34,7 +37,11 @@ def load_files_sequential(folder_path):
 
         process = multiprocessing.Process(target=process_files, args=(folder_path, file_name, time_results, results))
         process.start()
+        # set_cpu_affinity(process.pid, core_id)
         # print(f"Proceso hijo con PID {process.pid} para el archivo {file_name} iniciado.")
+        processes.append(process)
+
+    for process in processes:
         process.join()
 
         if process.exitcode != 0:

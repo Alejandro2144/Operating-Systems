@@ -2,6 +2,12 @@ import os
 import csv
 import time
 import logging
+import psutil
+
+def set_cpu_affinity(pid, core_id):
+    process = psutil.Process(pid)
+    process.cpu_affinity([core_id])
+    print("El proceso puede ejecutarse en el núcleo:", p.cpu_affinity())
 
 def get_formatted_time(time_in_seconds):
     """
@@ -33,9 +39,9 @@ def calculate_total_time(start_time, end_time):
     total_time = (end_time - start_time)*1000
     return total_time
 
-def process_file_secuentially(folder_path, file_name, time_results, results):
+def process_files(folder_path, file_name, time_results, results):
     """
-    Función que procesa secuencialmente la cantidad de archivos que haya en un directorio y mide el tiempo de carga de cada uno.
+    Función que procesa la cantidad de archivos que haya en un directorio y mide el tiempo de carga de cada uno.
 
     Args:
     - folder_path (str): Ruta del directorio que contiene los archivos a cargar.
