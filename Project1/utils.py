@@ -7,7 +7,7 @@ import psutil
 def set_cpu_affinity(pid, core_id):
     process = psutil.Process(pid)
     process.cpu_affinity([core_id])
-    print("El proceso puede ejecutarse en el núcleo:", p.cpu_affinity())
+    print("El proceso puede ejecutarse en el núcleo:", process.cpu_affinity())
 
 def get_formatted_time(time_in_seconds):
     """
@@ -52,13 +52,13 @@ def process_files(folder_path, file_name, time_results, results):
     Returns:
     - None
     """
+    file_path = os.path.join(folder_path, file_name)
 
     try:
-        file_path = os.path.join(folder_path, file_name)
+        
         file_start_time = time.time()
-        with open(file_path, 'r') as file:
-            reader = csv.reader(file)
-            data_list = list(reader)
+        with open(file_path, encoding="latin1") as file:
+            data_list = list(csv.reader(file))
             results.append(data_list)
         file_end_time = time.time()
         total_time_file = calculate_total_time(file_start_time, file_end_time)
