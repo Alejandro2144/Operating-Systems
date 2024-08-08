@@ -41,10 +41,10 @@ def read_files(file_path, results):
     - results (list): Lista compartida para guardar los resultados.
     """
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='latin1') as file:
             data = file.read()
             results.append((file_path, len(data)))  # Append file path and length of data as an example
-    except Exception as e:
+    except UnicodeDecodeError as e:
         logging.error(f"Error reading file {file_path}: {e}")
 
 def print_results(mode, program_start_time, program_end_time, file_names, start_times, end_times, results):
