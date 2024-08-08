@@ -15,6 +15,7 @@ def load_files_single_core(folder_path):
     - None
     """
     print(f"\nLeyendo los archivos en [bold cyan] single core [/bold cyan] mode")
+
     start_time_program = time.time()
 
     # Asignar el proceso a un solo núcleo
@@ -41,7 +42,13 @@ def load_files_single_core(folder_path):
         durations.append(duration)
         end_times.append(time.time())
 
+        memory_info = p.memory_info()
+        print(f"Memory used: {file_path}: {memory_info.rss / (1024 / 1024):.2f} MB")
+
     end_time_program = time.time()
+
+    final_memory_info = p.memory_info()
+    print(f"Memory used at the end of the program: {final_memory_info.rss / (1024 / 1024):.2f} MB")
 
     print_results("single core", start_time_program, end_time_program, 
                 file_paths, start_times, end_times, durations)

@@ -1,7 +1,8 @@
 import os
 import time
 import multiprocessing
-from utils import calculate_total_time, read_files, get_formatted_time, print_results
+from utils import read_files, get_formatted_time, print_results
+import psutil
 
 def load_files_sequential(folder_path):
     """
@@ -15,8 +16,8 @@ def load_files_sequential(folder_path):
     - None
     """
     manager = multiprocessing.Manager()
-    time_results = manager.list()
     results = manager.list()
+    p = psutil.Process(os.getpid())
 
     is_first_file = True
     program_start_time = time.time()
@@ -29,14 +30,14 @@ def load_files_sequential(folder_path):
     for file_name in os.listdir(folder_path):
         file_path = os.path.join(folder_path, file_name)
 
-        if is_first_file:  # Este bloque será ejecutado por el proceso hijo
+        if is_first_file: 
             is_first_file = False
             start_time_first_file = time.time()
             start_times.append(start_time_first_file)
         else:
             start_times.append(end_times[-1])
 
-        process = multiprocessing.Process(target=read_files, args=(file_path,))
+        process = multiprocessing.Process(target=read_files, args=(file_path, results))
         process.start()
         process.join()
 
@@ -45,7 +46,13 @@ def load_files_sequential(folder_path):
         if process.exitcode != 0:
             print(f"Proceso hijo para el archivo {file_name} falló.")
 
+        memory_info = p.memory_info()
+        print(f"Memory used: {file_path}: {memory_info.rss / 1024:.2f} KB")
+
     program_end_time = time.time()
 
+    final_memory_info = p.memory_info()
+    print(f"Memory used at the end of the program: {final_memory_info.rss / 1024:.2f} KB")
+
     print_results("sequential", program_start_time, program_end_time, 
-                list(os.listdir(folder_path)), start_times, end_times, list(time_results))
+                list(os.listdir(folder_path)), start_times, end_times, list(results))

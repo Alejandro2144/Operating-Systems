@@ -1,5 +1,3 @@
-import os
-import csv
 import time
 import logging
 from tabulate import tabulate
@@ -34,56 +32,45 @@ def calculate_total_time(start_time, end_time):
     total_time = (end_time - start_time) * 1000
     return total_time
 
-def read_files(file_path):
+def read_files(file_path, results):
     """
-    Función que lee un archivo y mide el tiempo de carga del archivo.
+    Función que lee un archivo y guarda el resultado en una lista compartida.
 
     Args:
     - file_path (str): Ruta del archivo a leer.
-
-    Returns:
-    - data (list): Datos leídos del archivo.
-    - duration (float): Duración de la carga del archivo en milisegundos.
+    - results (list): Lista compartida para guardar los resultados.
     """
     try:
-        start_time = time.time()
         with open(file_path, 'r') as file:
-            reader = csv.reader(file)
-            data = list(reader)
-        end_time = time.time()
-        duration = calculate_total_time(start_time, end_time)
-        return data, duration
+            data = file.read()
+            results.append((file_path, len(data)))  # Append file path and length of data as an example
     except Exception as e:
-        logging.error(f"Error processing file {file_path}: {e}")
-        return None, 0
+        logging.error(f"Error reading file {file_path}: {e}")
 
-def print_results(mode, start_time_program, end_time_program, file_paths, start_times, end_times, durations):
+def print_results(mode, program_start_time, program_end_time, file_names, start_times, end_times, results):
     """
-    Imprime el resumen de tiempos de lectura y resultados en una tabla organizada.
+    Función que imprime los resultados en una tabla.
 
     Args:
-    - mode (str): Modo de lectura (single core, multi core).
-    - start_time_program (float): Hora de inicio del programa.
-    - end_time_program (float): Hora de finalización del programa.
-    - file_paths (list): Lista de rutas a los archivos.
-    - start_times (list): Tiempos de inicio de lectura de cada archivo.
-    - end_times (list): Tiempos de fin de lectura de cada archivo.
-    - durations (list): Duración de lectura de cada archivo en milisegundos.
-
-    Returns:
-    - None
+    - mode (str): Modo de carga de archivos (secuencial o paralelo).
+    - program_start_time (float): Tiempo de inicio del programa.
+    - program_end_time (float): Tiempo de finalización del programa.
+    - file_names (list): Lista de nombres de archivos.
+    - start_times (list): Lista de tiempos de inicio de carga de archivos.
+    - end_times (list): Lista de tiempos de finalización de carga de archivos.
+    - results (list): Lista de resultados de la carga de archivos.
     """
-    total_time = calculate_total_time(start_time_program, end_time_program)
-    headers = ["Archivo", "Hora de Inicio", "Hora de Fin", "Duración (ms)"]
+    total_time = calculate_total_time(program_start_time, program_end_time)
+    headers = ["File Name", "Start Time", "End Time", "Duration (ms)", "Result"]
+    table = []
 
-    rows = [
-        [os.path.basename(file_path), get_formatted_time(start), get_formatted_time(end), f"{duration:.2f}"]
-        for file_path, start, end, duration in zip(file_paths, start_times, end_times, durations)
-    ]
+    for i, file_name in enumerate(file_names):
+        start_time = get_formatted_time(start_times[i])
+        end_time = get_formatted_time(end_times[i])
+        duration = calculate_total_time(start_times[i], end_times[i])
+        result = results[i] if i < len(results) else "N/A"
+        table.append([file_name, start_time, end_time, duration, result])
 
-    print(f"\nHora de inicio del programa: {get_formatted_time(start_time_program)}")
-    print(f"Hora de finalización del programa: {get_formatted_time(end_time_program)}")
-    print(f"Tiempo total del proceso en modo {mode}: {total_time:.2f} ms")
-    print("\nTabla de resumen de duración de carga de archivos:")
-    print(tabulate(rows, headers=headers, tablefmt='grid'))
-    print('\n')
+    print(tabulate(table, headers=headers, tablefmt="grid"))
+    print(f"\nTotal program time: {total_time:.2f} ms")
+
