@@ -1,6 +1,5 @@
 import os
 import time
-import multiprocessing
 import psutil
 from utils import calculate_total_time, get_formatted_time
 
@@ -38,7 +37,7 @@ def load_files_single_core(folder_path):
     file_paths = [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith('.csv')]
 
     def process_function(file_path):
-        # Establece la afinidad a un solo núcleo (0)
+        # Establece la afinidad a un solo núcleo (0 por ejemplo)
         p = psutil.Process(os.getpid())
         p.cpu_affinity([0])
         return read_file(file_path)
