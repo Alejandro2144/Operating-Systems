@@ -1,6 +1,9 @@
 import time
+import os
 import logging
 from tabulate import tabulate
+import psutil
+from rich.table import Table
 
 def get_formatted_time(time_in_seconds):
     """
@@ -32,6 +35,18 @@ def calculate_total_time(start_time, end_time):
     total_time = (end_time - start_time) * 1000
     return total_time
 
+def get_file_paths(folder_path):
+    """
+    Genera una lista de rutas de archivos en un directorio dado.
+
+    Args:
+    - folder_path (str): Ruta del directorio que contiene los archivos.
+
+    Returns:
+    - List[str]: Lista de rutas de archivos completas.
+    """
+    return [os.path.join(folder_path, file_name) for file_name in os.listdir(folder_path)]
+
 def read_files(file_path, results):
     """
     Función que lee un archivo y guarda el resultado en una lista compartida.
@@ -43,16 +58,15 @@ def read_files(file_path, results):
     try:
         with open(file_path, 'r', encoding='latin1') as file:
             data = file.read()
-            results.append((file_path, len(data)))  # Append file path and length of data as an example
+            results.append((file_path, len(data)))
     except UnicodeDecodeError as e:
         logging.error(f"Error reading file {file_path}: {e}")
 
-def print_results(mode, program_start_time, program_end_time, file_names, start_times, end_times, results):
+def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results):
     """
     Función que imprime los resultados en una tabla.
 
     Args:
-    - mode (str): Modo de carga de archivos (secuencial o paralelo).
     - program_start_time (float): Tiempo de inicio del programa.
     - program_end_time (float): Tiempo de finalización del programa.
     - file_names (list): Lista de nombres de archivos.
@@ -74,3 +88,20 @@ def print_results(mode, program_start_time, program_end_time, file_names, start_
     print(tabulate(table, headers=headers, tablefmt="grid"))
     print(f"\nTotal program time: {total_time:.2f} ms")
 
+def generate_table():
+    """
+    Genera una tabla que muestra el uso de la CPU.
+
+    Returns:
+    - Table: Tabla con el uso de la CPU por núcleo.
+    """
+    cpu_usages = psutil.cpu_percent(interval=None, percpu=True)
+    table = Table(title="Uso de CPU por Núcleo")
+
+    table.add_column("Núcleo", justify="right", style="cyan", no_wrap=True)
+    table.add_column("Uso (%)", justify="right", style="magenta")
+
+    for i, usage in enumerate(cpu_usages):
+        table.add_row(f"Núcleo {i}", f"{usage:.2f}%")
+
+    return table

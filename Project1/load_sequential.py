@@ -1,8 +1,8 @@
-import os
 import time
 import multiprocessing
-from utils import read_files, get_formatted_time, print_results
-import psutil
+from utils import read_files, get_formatted_time, print_results, generate_table, get_file_paths
+from rich.console import Console
+from rich.live import Live
 
 def load_files_sequential(folder_path):
     """
@@ -17,42 +17,30 @@ def load_files_sequential(folder_path):
     """
     manager = multiprocessing.Manager()
     results = manager.list()
-    p = psutil.Process(os.getpid())
 
-    is_first_file = True
     program_start_time = time.time()
-
     print(f'\nHora de inicio del programa: {get_formatted_time(program_start_time)}\n')
 
-    start_times = []
+    console = Console()
+    file_paths = get_file_paths(folder_path)
+    start_times = [program_start_time] * len(file_paths)
     end_times = []
 
-    for file_name in os.listdir(folder_path):
-        file_path = os.path.join(folder_path, file_name)
+    with Live(console=console, refresh_per_second=4, screen=False) as live:
+        for file_path in file_paths:
+            # Mostrar uso de CPU
+            live.update(generate_table())
 
-        if is_first_file: 
-            is_first_file = False
-            start_time_first_file = time.time()
-            start_times.append(start_time_first_file)
-        else:
-            start_times.append(end_times[-1])
+            process = multiprocessing.Process(target=read_files, args=(file_path, results))
+            process.start()
+            process.join()
 
-        process = multiprocessing.Process(target=read_files, args=(file_path, results))
-        process.start()
-        process.join()
+            end_times.append(time.time())
 
-        end_times.append(time.time())
+            if process.exitcode != 0:
+                print(f"Proceso hijo para el archivo {file_path} falló.")
 
-        if process.exitcode != 0:
-            print(f"Proceso hijo para el archivo {file_name} falló.")
+        program_end_time = time.time()
 
-        memory_info = p.memory_info()
-        print(f"Memory used: {file_path}: {memory_info.rss / 1024:.2f} KB")
-
-    program_end_time = time.time()
-
-    final_memory_info = p.memory_info()
-    print(f"Memory used at the end of the program: {final_memory_info.rss / 1024:.2f} KB")
-
-    print_results("sequential", program_start_time, program_end_time, 
-                list(os.listdir(folder_path)), start_times, end_times, list(results))
+        print_results(program_start_time, program_end_time, 
+                      file_paths, start_times, end_times, list(results))
