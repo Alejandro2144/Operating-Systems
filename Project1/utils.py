@@ -1,7 +1,9 @@
-import os
-import csv
 import time
+import os
 import logging
+from tabulate import tabulate
+import psutil
+from rich.table import Table
 
 def get_formatted_time(time_in_seconds):
     """
@@ -30,34 +32,76 @@ def calculate_total_time(start_time, end_time):
     Returns:
     - total_time (float): Tiempo total de carga de los archivos en milisegundos.
     """
-    total_time = (end_time - start_time)*1000
+    total_time = (end_time - start_time) * 1000
     return total_time
 
-def process_file_secuentially(folder_path, file_name, time_results, results):
+def get_file_paths(folder_path):
     """
-    Función que procesa secuencialmente la cantidad de archivos que haya en un directorio y mide el tiempo de carga de cada uno.
+    Genera una lista de rutas de archivos en un directorio dado.
 
     Args:
-    - folder_path (str): Ruta del directorio que contiene los archivos a cargar.
-    - file_name (str): Nombre del archivo a procesar.
-    - file_start_time (float): Tiempo de inicio de la carga del archivo en segundos.
-    - time_results (list): Lista enlazada con los tiempos de carga de los archivos.
+    - folder_path (str): Ruta del directorio que contiene los archivos.
 
     Returns:
-    - None
+    - List[str]: Lista de rutas de archivos completas.
     """
+    return [os.path.join(folder_path, file_name) for file_name in os.listdir(folder_path)]
 
+def read_files(file_path, results):
+    """
+    Función que lee un archivo y guarda el resultado en una lista compartida.
+
+    Args:
+    - file_path (str): Ruta del archivo a leer.
+    - results (list): Lista compartida para guardar los resultados.
+    """
     try:
-        file_path = os.path.join(folder_path, file_name)
-        file_start_time = time.time()
-        with open(file_path, 'r') as file:
-            reader = csv.reader(file)
-            data_list = list(reader)
-            results.append(data_list)
-        file_end_time = time.time()
-        total_time_file = calculate_total_time(file_start_time, file_end_time)
-        time_results.append(total_time_file)
+        with open(file_path, 'r', encoding='latin1') as file:
+            data = file.read()
+            results.append((file_path, len(data)))
+    except UnicodeDecodeError as e:
+        logging.error(f"Error reading file {file_path}: {e}")
 
-    except Exception as e:
-        logging.error(f"Error processing file {file_name}: {e}")
-        os._exit(1)
+def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results):
+    """
+    Función que imprime los resultados en una tabla.
+
+    Args:
+    - program_start_time (float): Tiempo de inicio del programa.
+    - program_end_time (float): Tiempo de finalización del programa.
+    - file_names (list): Lista de nombres de archivos.
+    - start_times (list): Lista de tiempos de inicio de carga de archivos.
+    - end_times (list): Lista de tiempos de finalización de carga de archivos.
+    - results (list): Lista de resultados de la carga de archivos.
+    """
+    total_time = calculate_total_time(program_start_time, program_end_time)
+    headers = ["File Name", "Start Time", "End Time", "Duration (ms)", "Result"]
+    table = []
+
+    for i, file_name in enumerate(file_names):
+        start_time = get_formatted_time(start_times[i])
+        end_time = get_formatted_time(end_times[i])
+        duration = calculate_total_time(start_times[i], end_times[i])
+        result = results[i] if i < len(results) else "N/A"
+        table.append([file_name, start_time, end_time, duration, result])
+
+    print(tabulate(table, headers=headers, tablefmt="grid"))
+    print(f"\nTotal program time: {total_time:.2f} ms")
+
+def generate_table():
+    """
+    Genera una tabla que muestra el uso de la CPU.
+
+    Returns:
+    - Table: Tabla con el uso de la CPU por núcleo.
+    """
+    cpu_usages = psutil.cpu_percent(interval=None, percpu=True)
+    table = Table(title="Uso de CPU por Núcleo")
+
+    table.add_column("Núcleo", justify="right", style="cyan", no_wrap=True)
+    table.add_column("Uso (%)", justify="right", style="magenta")
+
+    for i, usage in enumerate(cpu_usages):
+        table.add_row(f"Núcleo {i}", f"{usage:.2f}%")
+
+    return table

@@ -1,7 +1,8 @@
-import os
 import time
 import multiprocessing
-from utils import calculate_total_time, process_file_secuentially, get_formatted_time
+from utils import read_files, get_formatted_time, print_results, generate_table, get_file_paths
+from rich.console import Console
+from rich.live import Live
 
 def load_files_sequential(folder_path):
     """
@@ -14,37 +15,32 @@ def load_files_sequential(folder_path):
     Returns:
     - None
     """
-
     manager = multiprocessing.Manager()
-    time_results = manager.list()
     results = manager.list()
 
-    is_first_file = True
     program_start_time = time.time()
+    print(f'\nHora de inicio del programa: {get_formatted_time(program_start_time)}\n')
 
-    print('\nHora de inicio del programa: ', get_formatted_time(program_start_time), '\n')
+    console = Console()
+    file_paths = get_file_paths(folder_path)
+    start_times = [program_start_time] * len(file_paths)
+    end_times = []
 
-    for file_name in os.listdir(folder_path):
+    with Live(console=console, refresh_per_second=4, screen=False) as live:
+        for file_path in file_paths:
+            # Mostrar uso de CPU
+            live.update(generate_table())
 
-        if is_first_file:  # Este bloque será ejecutado por el proceso hijo
-            is_first_file = False
-            first_start_time = time.time()
-            print("Hora de inicio de la carga del primer archivo:", get_formatted_time(first_start_time), '\n')
+            process = multiprocessing.Process(target=read_files, args=(file_path, results))
+            process.start()
+            process.join()
 
-        process = multiprocessing.Process(target=process_file_secuentially, args=(folder_path, file_name, time_results, results))
-        process.start()
-        process.join()
+            end_times.append(time.time())
 
-        if process.exitcode != 0:
-            print(f"Proceso hijo para el archivo {file_name} falló.")
+            if process.exitcode != 0:
+                print(f"Proceso hijo para el archivo {file_path} falló.")
 
-    end_time = time.time()
-    print("Hora de finalización de la carga del último archivo:", get_formatted_time(end_time), '\n')
+        program_end_time = time.time()
 
-    total_time = calculate_total_time(program_start_time, end_time)
-    print(f"Tiempo total del proceso: {total_time:.2f} ms", '\n')
-
-    print("Tabla de resumen de duración de carga de archivos:", '\n')
-    for i, duration in enumerate(time_results):
-        print(f"Archivo {i+1}: {duration:.2f} ms")
-    print('\n')
+        print_results(program_start_time, program_end_time, 
+                      file_paths, start_times, end_times, list(results))
