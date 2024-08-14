@@ -62,7 +62,7 @@ def read_files(file_path, results):
     except UnicodeDecodeError as e:
         logging.error(f"Error reading file {file_path}: {e}")
 
-def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results, child_pids, memory_usages):
+def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results, child_pids):
     """
     Función que imprime los resultados en una tabla.
 
