@@ -3,7 +3,6 @@ import multiprocessing
 from utils import read_files, get_formatted_time, print_results, generate_table, get_file_paths
 from rich.console import Console
 from rich.live import Live
-import psutil
 
 def load_files_sequential(folder_path):
     """
