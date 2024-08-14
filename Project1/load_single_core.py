@@ -4,6 +4,7 @@ import psutil
 from utils import print_results, read_files, process_files, generate_table, get_file_paths
 from rich.console import Console
 from rich.live import Live
+import multiprocessing
 from multiprocessing import Process
 
 def load_files_single_core(folder_path):
@@ -32,13 +33,15 @@ def load_files_single_core(folder_path):
 
     #print(f"Usando el núcleo: {core_to_use[0]}")
 
+    manager = multiprocessing.Manager()
+    results = manager.list()
+
     console = Console()
     file_paths = get_file_paths(folder_path)
-    results = []
+   
     start_times = []
     end_times = []
     child_pids = []
-    processes = []
 
     print(f"\nProceso padre iniciado con PID: {os.getpid()}")
 
@@ -48,17 +51,22 @@ def load_files_single_core(folder_path):
         for file_path in file_paths:
             live.update(generate_table())
 
-            current_process = Process(target=process_files, args=(file_path, results, start_times, end_times))
-            # Iniciar el proceso hijo
-            processes.append(current_process)
+            start_times.append(time.time())
+
+            current_process = Process(target=read_files, args=(file_path, results))
             current_process.start()
+
             # Registrar los pIDs de los procesos hijos
             child_pids.append(current_process.pid)
+
             # Asignar el proceso a un solo núcleo
-            current_process.cpu_affinity([0])
-        # Esperar a que todos los procesos hijos terminen
-        for process in processes:
-            process.join()
+            p = psutil.Process(current_process.pid)
+            p.cpu_affinity([0])
+
+            current_process.join()
+
+            end_times.append(time.time())
+  
 
         end_time_program = time.time()
 
