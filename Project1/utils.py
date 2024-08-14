@@ -62,7 +62,7 @@ def read_files(file_path, results):
     except UnicodeDecodeError as e:
         logging.error(f"Error reading file {file_path}: {e}")
 
-def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results):
+def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results, child_pids, memory_usages):
     """
     Función que imprime los resultados en una tabla.
 
@@ -75,7 +75,7 @@ def print_results(program_start_time, program_end_time, file_names, start_times,
     - results (list): Lista de resultados de la carga de archivos.
     """
     total_time = calculate_total_time(program_start_time, program_end_time)
-    headers = ["File Name", "Start Time", "End Time", "Duration (ms)", "Result"]
+    headers = ["Nombre del Archivo", "Tiempo Inicial", "Tiempo Final", "Duración (ms)", "Resultado", "PID"]
     table = []
 
     for i, file_name in enumerate(file_names):
@@ -83,10 +83,11 @@ def print_results(program_start_time, program_end_time, file_names, start_times,
         end_time = get_formatted_time(end_times[i])
         duration = calculate_total_time(start_times[i], end_times[i])
         result = results[i] if i < len(results) else "N/A"
-        table.append([file_name, start_time, end_time, duration, result])
+        pid = child_pids[i] if i < len(child_pids) else "N/A"
+        table.append([file_name, start_time, end_time, duration, result, pid])
 
     print(tabulate(table, headers=headers, tablefmt="grid"))
-    print(f"\nTotal program time: {total_time:.2f} ms")
+    print(f"\nTiempo total del programa: {total_time:.2f} ms\n")
 
 def generate_table():
     """

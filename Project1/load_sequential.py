@@ -3,6 +3,7 @@ import multiprocessing
 from utils import read_files, get_formatted_time, print_results, generate_table, get_file_paths
 from rich.console import Console
 from rich.live import Live
+import psutil
 
 def load_files_sequential(folder_path):
     """
@@ -18,29 +19,38 @@ def load_files_sequential(folder_path):
     manager = multiprocessing.Manager()
     results = manager.list()
 
-    program_start_time = time.time()
-    print(f'\nHora de inicio del programa: {get_formatted_time(program_start_time)}\n')
-
     console = Console()
     file_paths = get_file_paths(folder_path)
-    start_times = [program_start_time] * len(file_paths)
+
     end_times = []
+    start_times = []
+    child_pids = []
+
+    print(f"\nProceso padre iniciado con PID: {multiprocessing.current_process().pid}")
+    program_start_time = time.time()
+    print(f'\nHora de inicio del programa: {get_formatted_time(program_start_time)}\n')
 
     with Live(console=console, refresh_per_second=4, screen=False) as live:
         for file_path in file_paths:
             # Mostrar uso de CPU
             live.update(generate_table())
+            # Registrar el tiempo de inicio para cada archivo
+            start_time = time.time()
+            start_times.append(start_time)
 
             process = multiprocessing.Process(target=read_files, args=(file_path, results))
             process.start()
+            # Registrar los pIDs de los procesos hijos
+            child_pids.append(process.pid)
+
             process.join()
 
             end_times.append(time.time())
 
             if process.exitcode != 0:
-                print(f"Proceso hijo para el archivo {file_path} falló.")
+                print(f"Proceso hijo con PID: {process.pid} para el archivo {file_path} falló.")
 
         program_end_time = time.time()
 
         print_results(program_start_time, program_end_time, 
-                      file_paths, start_times, end_times, list(results))
+                      file_paths, start_times, end_times, list(results), child_pids)

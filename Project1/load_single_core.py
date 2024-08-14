@@ -34,26 +34,31 @@ def load_files_single_core(folder_path):
     console = Console()
     file_paths = get_file_paths(folder_path)
     results = []
-    durations = []
     start_times = []
     end_times = []
+    is_first_file = True
 
     with Live(console=console, refresh_per_second=4, screen=False) as live:
         start_time_program = time.time()
         
-        for i, file_path in enumerate(file_paths):
-           
+        for file_path in enumerate(file_paths):
             live.update(generate_table())
             
-            if i == 0:
+            if is_first_file:
                 start_time_first_file = time.time()
                 start_times.append(start_time_first_file)
+                is_first_file = False
             else:
                 start_times.append(end_times[-1])
 
-            read_files(file_path, results)
-            end_times.append(time.time())
-            durations.append(end_times[-1] - start_times[-1])
+            try:
+                read_files(file_path, results)
+            except Exception as e:
+                print(f"Error al procesar el archivo {file_path}: {e}")
+                results.append(None)
+
+            end_time = time.time()
+            end_times.append(end_time)
 
         end_time_program = time.time()
 
