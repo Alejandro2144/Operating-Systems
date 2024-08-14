@@ -1,9 +1,10 @@
 import os
 import time
 import psutil
-from utils import print_results, read_files, generate_table, get_file_paths
+from utils import print_results, read_files, process_files, generate_table, get_file_paths
 from rich.console import Console
 from rich.live import Live
+from multiprocessing import Process
 
 def load_files_single_core(folder_path):
     """
@@ -18,49 +19,48 @@ def load_files_single_core(folder_path):
     """
 
     # Obtener el número de núcleos disponibles y verificar el núcleo a usar
-    available_cores = psutil.cpu_count(logical=True)
-    core_to_use = [3]
+    #available_cores = psutil.cpu_count(logical=True)
+    #core_to_use = [3]
 
-    if core_to_use[0] >= available_cores:
-        print(f"Error: El núcleo especificado ({core_to_use[0]}) no es válido. El sistema tiene {available_cores} núcleos.")
-        return
+    #if core_to_use[0] >= available_cores:
+    #    print(f"Error: El núcleo especificado ({core_to_use[0]}) no es válido. El sistema tiene {available_cores} núcleos.")
+    #    return
 
     # Asignar el proceso a un solo núcleo
-    p = psutil.Process(os.getpid())
-    p.cpu_affinity(core_to_use)
+    #p = psutil.Process(os.getpid())
+    #p.cpu_affinity(core_to_use)
 
-    print(f"Usando el núcleo: {core_to_use[0]}")
+    #print(f"Usando el núcleo: {core_to_use[0]}")
 
     console = Console()
     file_paths = get_file_paths(folder_path)
     results = []
     start_times = []
     end_times = []
-    is_first_file = True
+    child_pids = []
+    processes = []
+
+    print(f"\nProceso padre iniciado con PID: {os.getpid()}")
 
     with Live(console=console, refresh_per_second=4, screen=False) as live:
         start_time_program = time.time()
         
-        for file_path in enumerate(file_paths):
+        for file_path in file_paths:
             live.update(generate_table())
-            
-            if is_first_file:
-                start_time_first_file = time.time()
-                start_times.append(start_time_first_file)
-                is_first_file = False
-            else:
-                start_times.append(end_times[-1])
 
-            try:
-                read_files(file_path, results)
-            except Exception as e:
-                print(f"Error al procesar el archivo {file_path}: {e}")
-                results.append(None)
-
-            end_time = time.time()
-            end_times.append(end_time)
+            current_process = Process(target=process_files, args=(file_path, results, start_times, end_times))
+            # Iniciar el proceso hijo
+            processes.append(current_process)
+            current_process.start()
+            # Registrar los pIDs de los procesos hijos
+            child_pids.append(current_process.pid)
+            # Asignar el proceso a un solo núcleo
+            current_process.cpu_affinity([0])
+        # Esperar a que todos los procesos hijos terminen
+        for process in processes:
+            process.join()
 
         end_time_program = time.time()
 
         print_results(start_time_program, end_time_program, 
-                      file_paths, start_times, end_times, results)
+                      file_paths, start_times, end_times, results, child_pids)
