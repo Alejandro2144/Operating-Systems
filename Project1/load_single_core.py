@@ -20,18 +20,18 @@ def load_files_single_core(folder_path):
     """
 
     # Obtener el número de núcleos disponibles y verificar el núcleo a usar
-    #available_cores = psutil.cpu_count(logical=True)
-    #core_to_use = [3]
+    available_cores = psutil.cpu_count(logical=True)
+    core_to_use = [3]
 
-    #if core_to_use[0] >= available_cores:
-    #    print(f"Error: El núcleo especificado ({core_to_use[0]}) no es válido. El sistema tiene {available_cores} núcleos.")
-    #    return
+    if core_to_use[0] >= available_cores:
+        print(f"Error: El núcleo especificado ({core_to_use[0]}) no es válido. El sistema tiene {available_cores} núcleos.")
+        return
 
     # Asignar el proceso a un solo núcleo
-    #p = psutil.Process(os.getpid())
-    #p.cpu_affinity(core_to_use)
+    p = psutil.Process(os.getpid())
+    p.cpu_affinity(core_to_use)
 
-    #print(f"Usando el núcleo: {core_to_use[0]}")
+    print(f"\nUsando el núcleo: {core_to_use[0]}")
 
     manager = multiprocessing.Manager()
     results = manager.list()
@@ -54,20 +54,16 @@ def load_files_single_core(folder_path):
             start_times.append(time.time())
 
             current_process = Process(target=read_files, args=(file_path, results))
+
             current_process.start()
 
             # Registrar los pIDs de los procesos hijos
             child_pids.append(current_process.pid)
 
-            # Asignar el proceso a un solo núcleo
-            p = psutil.Process(current_process.pid)
-            p.cpu_affinity([0])
-
             current_process.join()
 
             end_times.append(time.time())
   
-
         end_time_program = time.time()
 
         print_results(start_time_program, end_time_program, 
