@@ -62,27 +62,7 @@ def read_files(file_path, results):
     except UnicodeDecodeError as e:
         logging.error(f"Error reading file {file_path}: {e}")
 
-def process_files(file_paths, results, start_times, end_times):
-    """
-    Función que procesa los archivos en una lista de rutas de archivos.
-
-    Args:
-    - file_paths (list): Lista de rutas de archivos.
-    - results (list): Lista de resultados de la carga de archivos.
-    - start_times (list): Lista de tiempos de inicio de carga de archivos.
-    - end_times (list): Lista de tiempos de finalización de carga de archivos.
-    """
-    start_time = time.time()
-    start_times.append(start_time)
-
-    try:
-        read_files(file_paths, results)
-    except Exception as e:
-        print(f"Error reading file {file_paths}: {e}")
-        results.append(None)
-    
-    end_time = time.time()
-    end_times.append(end_time)
+    return os.getpid()
 
 def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results, child_pids):
     """

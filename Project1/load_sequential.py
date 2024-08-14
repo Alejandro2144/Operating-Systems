@@ -52,4 +52,4 @@ def load_files_sequential(folder_path):
         program_end_time = time.time()
 
         print_results(program_start_time, program_end_time, 
-                      file_paths, start_times, end_times, list(results), child_pids)
+                      file_paths, start_times, end_times, results, child_pids)

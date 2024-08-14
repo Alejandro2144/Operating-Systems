@@ -27,6 +27,7 @@ def load_files_multi_core(folder_path):
 
     start_times = []
     end_times = []
+    child_pids = []
 
     with Live(console=console, refresh_per_second=4, screen=False) as live:
         start_time_program = time.time()
@@ -43,7 +44,7 @@ def load_files_multi_core(folder_path):
             for future in future_results:
                 live.update(generate_table())
                 try:
-                    future.result()
+                    child_pids.append(future.result())
                 except Exception as e:
                     print(f"Error al procesar el archivo: {e}")
                 end_times.append(time.time())
@@ -51,4 +52,4 @@ def load_files_multi_core(folder_path):
         end_time_program = time.time()
 
         print_results(start_time_program, end_time_program, 
-                      file_paths, start_times, end_times, list(results))
+                      file_paths, start_times, end_times, results, child_pids)

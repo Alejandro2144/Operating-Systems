@@ -1,7 +1,7 @@
 import os
 import time
 import psutil
-from utils import print_results, read_files, process_files, generate_table, get_file_paths
+from utils import print_results, read_files, generate_table, get_file_paths
 from rich.console import Console
 from rich.live import Live
 import multiprocessing
