@@ -47,7 +47,7 @@ def get_file_paths(folder_path):
     """
     return [os.path.join(folder_path, file_name) for file_name in os.listdir(folder_path)]
 
-def read_files(file_path, results, block_size=1024*1024):
+def read_files(file_path, results):
     """
     Función que lee un archivo y guarda el resultado en una lista compartida.
 
@@ -58,16 +58,9 @@ def read_files(file_path, results, block_size=1024*1024):
 
     try:
         with open(file_path, 'r', encoding='latin1') as file:
-            total_size = 0
-            data = []
-            while True:
-                block = file.read(block_size)
-                if not block:
-                    break
-                total_size += sys.getsizeof(block)
-                data.append(block)
-            results.append(total_size / (1024**2))  # Convertir a MB
-            results.append(''.join(data))
+            data = file.read()
+            results.append(( (sys.getsizeof(data))/(1024**2) ))
+            # results.append((data))
     except Exception as e:
         print(f"Error reading file {file_path}: {e}")
     
