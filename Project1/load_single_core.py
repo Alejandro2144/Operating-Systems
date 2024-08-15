@@ -4,6 +4,8 @@ import psutil
 from utils import print_results, read_files, generate_table, get_file_paths
 from rich.console import Console
 from rich.live import Live
+import multiprocessing
+from multiprocessing import Process
 
 def load_files_single_core(folder_path):
     """
@@ -29,33 +31,40 @@ def load_files_single_core(folder_path):
     p = psutil.Process(os.getpid())
     p.cpu_affinity(core_to_use)
 
-    print(f"Usando el núcleo: {core_to_use[0]}")
+    print(f"\nUsando el núcleo: {core_to_use[0]}")
+
+    manager = multiprocessing.Manager()
+    results = manager.list()
 
     console = Console()
     file_paths = get_file_paths(folder_path)
-    results = []
-    durations = []
+   
     start_times = []
     end_times = []
+    child_pids = []
+
+    print(f"\nProceso padre iniciado con PID: {os.getpid()}")
 
     with Live(console=console, refresh_per_second=4, screen=False) as live:
         start_time_program = time.time()
         
-        for i, file_path in enumerate(file_paths):
-           
+        for file_path in file_paths:
             live.update(generate_table())
-            
-            if i == 0:
-                start_time_first_file = time.time()
-                start_times.append(start_time_first_file)
-            else:
-                start_times.append(end_times[-1])
 
-            read_files(file_path, results)
+            start_times.append(time.time())
+
+            current_process = Process(target=read_files, args=(file_path, results))
+
+            current_process.start()
+
+            # Registrar los pIDs de los procesos hijos
+            child_pids.append(current_process.pid)
+
+            current_process.join()
+
             end_times.append(time.time())
-            durations.append(end_times[-1] - start_times[-1])
-
+  
         end_time_program = time.time()
 
         print_results(start_time_program, end_time_program, 
-                      file_paths, start_times, end_times, results)
+                      file_paths, start_times, end_times, results, child_pids)
