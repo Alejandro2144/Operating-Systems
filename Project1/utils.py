@@ -60,13 +60,12 @@ def read_files(file_path, results):
         with open(file_path, 'r', encoding='latin1') as file:
             data = file.read()
             results.append(( (sys.getsizeof(data))/(1024**2) ))
-            # results.append((data))
     except Exception as e:
         print(f"Error reading file {file_path}: {e}")
     
     return os.getpid()
 
-def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results, child_pids, rss, vms):
+def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results, child_pids, rss=[], vms=[]):
     """
     Función que imprime los resultados en una tabla.
 
