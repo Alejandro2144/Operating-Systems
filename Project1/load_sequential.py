@@ -3,6 +3,7 @@ import multiprocessing
 from utils import read_files, get_formatted_time, print_results, generate_table, get_file_paths
 from rich.console import Console
 from rich.live import Live
+import psutil
 
 def load_files_sequential(folder_path):
     """
@@ -24,6 +25,8 @@ def load_files_sequential(folder_path):
     end_times = []
     start_times = []
     child_pids = []
+    memory_rss = []
+    memory_vms = []
 
     print(f"\nProceso padre iniciado con PID: {multiprocessing.current_process().pid}")
     program_start_time = time.time()
@@ -39,8 +42,20 @@ def load_files_sequential(folder_path):
 
             process = multiprocessing.Process(target=read_files, args=(file_path, results))
             process.start()
+
             # Registrar los pIDs de los procesos hijos
             child_pids.append(process.pid)
+
+            # Monitoreo de memoria
+            proc_memory = psutil.Process(process.pid).memory_info()
+
+            # Virtual Memory Size (memoria virtual)
+            vms = round((proc_memory.vms / (1024 ** 2)), 2)
+            memory_vms.append(vms)
+
+            # Resident Set Size (memoria física)
+            rss = round((proc_memory.rss / (1024 ** 2)), 2)
+            memory_rss.append(rss)
 
             process.join()
 
@@ -52,4 +67,4 @@ def load_files_sequential(folder_path):
         program_end_time = time.time()
 
         print_results(program_start_time, program_end_time, 
-                      file_paths, start_times, end_times, results, child_pids)
+                      file_paths, start_times, end_times, results, child_pids, memory_rss, memory_vms)

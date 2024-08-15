@@ -1,9 +1,9 @@
 import time
 import os
-import logging
 from tabulate import tabulate
 import psutil
 from rich.table import Table
+import sys
 
 def get_formatted_time(time_in_seconds):
     """
@@ -47,7 +47,7 @@ def get_file_paths(folder_path):
     """
     return [os.path.join(folder_path, file_name) for file_name in os.listdir(folder_path)]
 
-def read_files(file_path, results):
+def read_files(file_path, results, block_size=1024*1024):
     """
     Función que lee un archivo y guarda el resultado en una lista compartida.
 
@@ -55,16 +55,25 @@ def read_files(file_path, results):
     - file_path (str): Ruta del archivo a leer.
     - results (list): Lista compartida para guardar los resultados.
     """
+
     try:
         with open(file_path, 'r', encoding='latin1') as file:
-            data = file.read()
-            results.append((file_path, len(data)))
-    except UnicodeDecodeError as e:
-        logging.error(f"Error reading file {file_path}: {e}")
-
+            total_size = 0
+            data = []
+            while True:
+                block = file.read(block_size)
+                if not block:
+                    break
+                total_size += sys.getsizeof(block)
+                data.append(block)
+            results.append(total_size / (1024**2))  # Convertir a MB
+            results.append(''.join(data))
+    except Exception as e:
+        print(f"Error reading file {file_path}: {e}")
+    
     return os.getpid()
 
-def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results, child_pids):
+def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results, child_pids, rss, vms):
     """
     Función que imprime los resultados en una tabla.
 
@@ -77,7 +86,7 @@ def print_results(program_start_time, program_end_time, file_names, start_times,
     - results (list): Lista de resultados de la carga de archivos.
     """
     total_time = calculate_total_time(program_start_time, program_end_time)
-    headers = ["Nombre del Archivo", "Tiempo Inicial", "Tiempo Final", "Duración (ms)", "Resultado", "PID"]
+    headers = ["Nombre", "T. Inicial", "T. Final", "Duración", "Peso", "PID", "RSS", "VMS"]
     table = []
 
     for i, file_name in enumerate(file_names):
@@ -86,7 +95,9 @@ def print_results(program_start_time, program_end_time, file_names, start_times,
         duration = calculate_total_time(start_times[i], end_times[i])
         result = results[i] if i < len(results) else "N/A"
         pid = child_pids[i] if i < len(child_pids) else "N/A"
-        table.append([file_name, start_time, end_time, duration, result, pid])
+        rss_memory = rss[i] if i < len(rss) else "N/A"
+        vms_memory = vms[i] if i < len(vms) else "N/A"
+        table.append([file_name, start_time, end_time, duration, result, pid, rss_memory, vms_memory])
 
     print(tabulate(table, headers=headers, tablefmt="grid"))
     print(f"\nTiempo total del programa: {total_time:.2f} ms\n")
