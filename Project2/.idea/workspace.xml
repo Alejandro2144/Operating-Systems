@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="bef64f2c-4e11-4dfa-a689-8a2bd92bf0c0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/KJRdocs.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Karel.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/KarelJRobot.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/META-INF/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimulatorUserGuide.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trabajos/Compilar.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trabajos/EditarMundos.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trabajos/KarelJRobot.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trabajos/Mapa.kwld" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trabajos/RobotConductor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trabajos/RobotMover.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trabajos/Run.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trabajos/Trabajos/RobotConductor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trabajos/Trabajos/RobotMover.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trabajos/Trabajos/TrafficManagement.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Trabajos/TrafficManagement.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/.idea/libraries/Karel.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/.idea/libraries/KarelJRobot.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/.idea/workspace 2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/KJRdocs.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/Karel.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/KarelJRobot.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/META-INF/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/SimulatorUserGuide.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/Trabajos/Ciudad.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/Trabajos/Compilar.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/Trabajos/EditarMundos.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/Trabajos/KarelJRobot.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/Trabajos/Mapa.kwld" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/Trabajos/RobotConductor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/Trabajos/Run.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/karel/ControllerMain.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/karel/UnitTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/beepercursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/beeperdeletecursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/ewcursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/ewdeletecursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/karele.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/kareleOff.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/kareln.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/karelnOff.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/karels.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/karelsOff.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/karelw.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/karelwOff.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/nscursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/src/kareltherobot/nsdeletecursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/test.kwld" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Karel/worldFilesDOS.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/karel/ControllerMain.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/karel/UnitTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/beepercursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/beeperdeletecursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/ewcursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/ewdeletecursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/karele.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/kareleOff.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/kareln.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/karelnOff.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/karels.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/karelsOff.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/karelw.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/karelwOff.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/nscursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kareltherobot/nsdeletecursor.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.kwld" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/worldFilesDOS.zip" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 1
+}]]></component>
+  <component name="ProjectId" id="2lqHl4wKQGctoN6WWrZ9DKMovqn" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/usuario/Documents/Repositorio academico/Operating-Systems/Project2",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.20224.419" />
+        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-IU-242.20224.419" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="bef64f2c-4e11-4dfa-a689-8a2bd92bf0c0" name="Changes" comment="" />
+      <created>1725900833704</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1725900833704</updated>
+      <workItem from="1725900834755" duration="43000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
