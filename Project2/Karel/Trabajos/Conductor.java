@@ -47,7 +47,6 @@ public class Conductor extends Robot implements Runnable {
         mover(3);
         girarAlNorte();
         mover(5);
-        recogerPasajero();
         girarAlOeste();
     }
 
