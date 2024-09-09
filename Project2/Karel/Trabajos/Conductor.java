@@ -52,13 +52,8 @@ public class Conductor extends Robot implements Runnable {
     }
 
     private void recogerPasajero(){
-        if (nextToABeeper()) {
-            pickBeeper();
-            pasajerosDisponibles--;
-        } else {
-            System.out.println("No hay pasajeros cerca");
-            // Aqui podriamos iniciar la subrutina para regresar al parqueadero
-        }
+        pickBeeper();
+        pasajerosDisponibles--;
     }
 
     private void llevarPasajero(int paradaElegida){
