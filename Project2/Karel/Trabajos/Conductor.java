@@ -4,13 +4,14 @@ import kareltherobot.*;
 import java.awt.Color;
 import java.util.Random;
 
-public class Conductor extends Robot implements Runnable {
+public class Conductor extends MyRobot implements Runnable {
 
     private final Random random = new Random(); // Parada donde deja el pasajero
-    private int pasajerosDisponibles = 1000;
+    private int pasajerosDisponibles = 1000; // Cantidad de pasajeros disponibles
 
-    public Conductor(int street, int avenue, Direction direction, int beepers, Color color){
-        super(street, avenue, direction, beepers, color);
+
+    public Conductor(int street, int avenue, Direction direction, int beepers, Color color, Semaforo semaforo) {
+        super(street, avenue, direction, beepers, color, semaforo);
     }
 
     @Override
@@ -43,7 +44,6 @@ public class Conductor extends Robot implements Runnable {
     }
 
     private void irARecogerPasajero(){
-        //
         mover(3);
         girarAlNorte();
         mover(5);
@@ -330,7 +330,5 @@ public class Conductor extends Robot implements Runnable {
         mover(16);
         girarAlEste();
     }
-
-
 
 }
