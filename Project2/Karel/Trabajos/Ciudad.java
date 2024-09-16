@@ -15,10 +15,10 @@ public class Ciudad implements Directions {
         Semaforo semaforo = new Semaforo();
 
         // Instanciar los robots conductores
-        Conductor[] robots = new Conductor[10];
+        Conductor[] robots = new Conductor[1];
 
         // Ubicar e inicializar el hilo de cada robot en el parqueadero
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1; i++) {
             robots[i] = new Conductor(3, 16, East, 0, Color.blue, semaforo);
             new Thread(robots[i]).start();
         }

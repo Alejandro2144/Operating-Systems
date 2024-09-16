@@ -245,6 +245,12 @@ public class Conductor extends MyRobot implements Runnable {
         mover(1);
         girarAlNorte();
         mover(10);
+        girarAlOeste();
+        mover(1);
+        girarAlSur();
+        mover(1);
+        girarAlEste();
+        mover(1);
     }
 
     private void regresarDesdeParada1() {
@@ -292,7 +298,7 @@ public class Conductor extends MyRobot implements Runnable {
 
     private void regresarDesdeParada4() {
         girarAlSur();
-        mover(10);
+        mover(9);
         girarAlOeste();
         mover(1);
         girarAlNorte();
