@@ -9,11 +9,13 @@ public class Semaforo {
     private final ConcurrentHashMap<Point, ReentrantLock> semaforos; // <Coordenada, Ocupado>
     private final ConcurrentHashMap<Point, Boolean> posiciones; // true: ocupado, false: libre
     private final ConcurrentHashMap<Point, Condition> condiciones;
+    private final ConcurrentHashMap<Point, MyRobot> posicionesRobots;  // Almacena los robots por posición
 
     public Semaforo() {
         semaforos = new ConcurrentHashMap<>();
         posiciones = new ConcurrentHashMap<>();
         condiciones = new ConcurrentHashMap<>();
+        posicionesRobots = new ConcurrentHashMap<>();
         inicializarSemaforos();
     }
 
@@ -120,6 +122,17 @@ public class Semaforo {
                 posiciones.notify();
             }
         }
+    }
+
+    // Actualiza la posición del robot en el mapa
+    public void actualizarPosicionRobot(MyRobot robot, Point posicionActual, Point siguientePosicion) {
+        posicionesRobots.remove(posicionActual);  // Eliminar la posición anterior
+        posicionesRobots.put(siguientePosicion, robot);  // Actualizar con la nueva posición
+    }
+
+    // Obtener el robot en una posición
+    public MyRobot obtenerRobotEnPosicion(Point posicion) {
+        return posicionesRobots.get(posicion);  // Retorna el robot en esa posición o null
     }
 
 }
