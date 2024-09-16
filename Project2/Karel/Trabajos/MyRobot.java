@@ -13,8 +13,7 @@ public class MyRobot extends Robot implements Directions, Runnable {
     }
 
     // Obtener la calle actual
-    public int street()
-    {
+    public int street() {
         String mensaje = this.toString();
         int posicion = mensaje.indexOf("street: ");
         int posFinal = mensaje.indexOf(")", posicion);
@@ -22,50 +21,64 @@ public class MyRobot extends Robot implements Directions, Runnable {
     }
 
     // Obtener la avenida actual
-    public int avenue()
-    {
+    public int avenue() {
         String mensaje = this.toString()       ;
         int posicion = mensaje.indexOf("avenue: ");
         int posFinal = mensaje.indexOf(")", posicion);
         return Integer.parseInt(mensaje.substring(posicion+8, posFinal));
     }
 
-    // Obtiene la proxima posición dependiendo de a dónde este mirando el robot
-    public void modificarPosicion()
-    {
-        // Posicion inicial antes del movimiento
-        int avenidaActual = avenue();
-        int calleActual = street();
+    // Obtiene la proxima posición en funcion de la direccion del robot
+    public Point calcularSiguientePosicion(){
 
-        // Ver la siguiente casilla en funcion de la direccion
-        int avenidaSiguiente = avenidaActual;
-        int calleSiguiente = calleActual;
+        // Posicion inicial antes del movimiento
+        int avenidaSiguiente = avenue();
+        int calleSiguiente = street();
 
         if (facingEast()) {
             avenidaSiguiente++;
-            semaforo.actualizarPosiciones(new Point(avenidaSiguiente, calleActual));
         } else if (facingWest()) {
             avenidaSiguiente--;
-            semaforo.actualizarPosiciones(new Point(avenidaSiguiente, calleActual));
         } else if (facingSouth()) {
-            calleSiguiente++;
-            semaforo.actualizarPosiciones(new Point(avenidaActual, calleSiguiente));
-        } else if (facingNorth()) {
             calleSiguiente--;
-            semaforo.actualizarPosiciones(new Point(avenidaActual, calleSiguiente));
+        } else if (facingNorth()) {
+            calleSiguiente++;
         }
 
+        return new Point(avenidaSiguiente, calleSiguiente);
     }
 
     @Override
-    public synchronized void move() {
-        // Antes del movimiento aqui hay que hacer lo siguiente:
-        // Preguntar si a donde me voy a mover es semaforo y esta ocupado
+    public void move() {
+        Point posicionActual = new Point(avenue(), street());
+        Point siguientePosicion = calcularSiguientePosicion();
 
-        // Llamar a moverse de la logica original
-        super.move();
+        try {
+            // Esperar a que la siguiente posicion este libre
+            semaforo.esperar(siguientePosicion);
 
-        // Hacer algo despues del movimiento si es que es necesario
+            // Intenta ocupar el semaforo si existe en la siguiente posicion
+            while (semaforo.esSemaforo(siguientePosicion) && !semaforo.intentarOcuparSemaforo(siguientePosicion)) {
+                semaforo.esperar(siguientePosicion);
+            }
+
+            semaforo.actualizarPosicion(siguientePosicion, true); // Marcar la siguiente posicion como ocupada
+
+            // Realizar el movimiento
+            super.move();
+
+            // Actualizar la posicion del robot
+            semaforo.actualizarPosicion(posicionActual, false); // Liberar la posicion actual
+
+            // Liberar el semaforo en la posicion anterior
+            if (semaforo.esSemaforo(posicionActual)) {
+                semaforo.liberarSemaforo(posicionActual);
+            }
+
+            // Notificar que el robot ha liberado el semaforo
+            semaforo.notificar(posicionActual);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
-
 }

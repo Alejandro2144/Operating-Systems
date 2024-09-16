@@ -17,6 +17,7 @@ public class Conductor extends MyRobot implements Runnable {
     @Override
     public void run() {
         while (pasajerosDisponibles > 0) {
+
             // Ir a recoger el pasajero
             irARecogerPasajero();
 
@@ -132,6 +133,16 @@ public class Conductor extends MyRobot implements Runnable {
         mover(4);
         girarAlSur();
         mover(3);
+        girarAlOeste();
+        mover(3);
+        girarAlNorte();
+        mover(2);
+        girarAlEste();
+        mover(2);
+        girarAlSur();
+        mover(1);
+        girarAlEste();
+        mover(1);
     }
 
     private void irAParada2(){
@@ -151,11 +162,26 @@ public class Conductor extends MyRobot implements Runnable {
         mover(1);
         girarAlOeste();
         mover(7); // Aqui se entra a la interseccion (avenue 10, street 10)
-        mover(3);
+        mover(3); // Aqui entra a la interseccion (avenue 7, street 10)
         girarAlNorte();
         mover(3);
+        girarAlOeste();
+        mover(3);
+        girarAlSur();
+        mover(3);
+        girarAlEste();
+        mover(1);
+        girarAlNorte();
+        mover(1);
+        girarAlEste();
+        mover(1);
+        girarAlNorte();
+        mover(1);
+        girarAlEste();
+        mover(1);
     }
 
+    // Aqui nos tenemos que idear algo para que los robots se guarden en 7,7 y 9,7 (modificar tambien el regreso)
     private void irAParada3(){
         entrarAlBloqueDeParadas();
         mover(7);
@@ -175,6 +201,7 @@ public class Conductor extends MyRobot implements Runnable {
         mover(2);
     }
 
+    // Aqui lo mismo, tenemos que pensar como evitar los deadlocks con los robots en esta parada
     private void irAParada4(){
         entrarAlBloqueDeParadas();
         mover(7);
@@ -222,7 +249,7 @@ public class Conductor extends MyRobot implements Runnable {
 
     private void regresarDesdeParada1() {
         girarAlNorte();
-        mover(3);
+        mover(2);
         girarAlEste();
         mover(3);
         girarAlSur();
@@ -240,7 +267,7 @@ public class Conductor extends MyRobot implements Runnable {
 
     private void regresarDesdeParada2() {
         girarAlSur();
-        mover(3);
+        mover(2);
         girarAlOeste();
         mover(1);
         girarAlSur();
