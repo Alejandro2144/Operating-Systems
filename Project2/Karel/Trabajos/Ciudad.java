@@ -6,26 +6,21 @@ import java.awt.Color;
 public class Ciudad implements Directions {
     public static void main(String[] args) {
 
-        // Leer el mapa
+        // Leer el mapa del mundo
         World.readWorld("Mundo.kwld");
         World.setVisible(true);
         World.showSpeedControl(true, true);
 
-        // Crear las instancias de los robots
-        Conductor[] robots = new Conductor[10];
+        // Crear la instancia de semáforo que manejará las 44 intersecciones
+        Semaforo semaforo = new Semaforo();
 
-        // Ubicar los robots en el parqueadero
-        for (int i = 0; i < 10; i++) {
-            robots[i] = new Conductor(3, 16, East, 0, Color.blue);
-        }
+        // Instanciar los robots conductores
+        Conductor[] robots = new Conductor[8];
 
-        // Inicializar los hilos para manejar los robots
-        for (Conductor robot : robots) {
-            new Thread(robot).start();
-
-            //new Thread(() -> {
-                // AQUÍ: RECIBIR VIAJE, RECOGER PASAJERO, LLEVAR PASAJERO, DEJAR PASAJERO, REGRESAR POR PASAJERO, RECIBIR VIAJE, RECOGER PASAJERO
-            //}).start();
+        // Ubicar e inicializar el hilo de cada robot en el parqueadero
+        for (int i = 0; i < 8; i++) {
+            robots[i] = new Conductor(3, 16, East, 0, Color.blue, semaforo);
+            new Thread(robots[i]).start();
         }
     }
 }
