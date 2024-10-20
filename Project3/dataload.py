@@ -1,7 +1,5 @@
 import argparse
 from load_sequential import load_files_sequential
-from load_single_core import load_files_single_core
-from load_multi_core import load_files_multi_core 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Lector de datos')
@@ -11,8 +9,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.single:
-        load_files_single_core(args.folder)
+        pass
     elif args.multi:
-        load_files_multi_core(args.folder) 
+        pass
     else:
         load_files_sequential(args.folder)
