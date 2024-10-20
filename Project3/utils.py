@@ -1,9 +1,10 @@
 import time
 import os
-from tabulate import tabulate
 import psutil
+import csv
+from collections import defaultdict
+from tabulate import tabulate
 from rich.table import Table
-import sys
 
 def get_formatted_time(time_in_seconds):
     """
@@ -47,52 +48,102 @@ def get_file_paths(folder_path):
     """
     return [os.path.join(folder_path, file_name) for file_name in os.listdir(folder_path)]
 
-def read_files(file_path, results):
+def monitor_memory():
     """
-    Función que lee un archivo y guarda el resultado en una lista compartida.
+    Monitorea y devuelve el uso de memoria en MB.
+
+    Returns:
+    - memory_usage (float): Uso de memoria en MB.
+    """
+    proc_memory = psutil.Process().memory_info()
+    return round(proc_memory.rss / (1024 ** 2), 2)
+
+import os
+import csv
+
+def read_file_in_chunks(file_path, chunk_size=1024):
+    """
+    Lee un archivo CSV en fragmentos para optimizar el uso de memoria.
 
     Args:
     - file_path (str): Ruta del archivo a leer.
-    - results (list): Lista compartida para guardar los resultados.
+    - chunk_size (int): Tamaño del fragmento en registros. Default: 1024.
+
+    Returns:
+    - List[dict]: Lista de videos con sus datos y la región correspondiente.
     """
+    # Lista principal para almacenar los videos leídos
+    videos = []
+
+    # Extraer la región del nombre del archivo (por ejemplo: 'US_videos.csv' → 'US')
+    region = os.path.basename(file_path).split('_')[0].upper()
 
     try:
-        with open(file_path, 'r', encoding='latin1') as file:
-            data = file.read()
-            results.append(( (sys.getsizeof(data))/(1024**2) ))
-    except Exception as e:
-        print(f"Error reading file {file_path}: {e}")
-    
-    return os.getpid()
+        # Abrir el archivo usando UTF-8 (intentar con codificación estándar)
+        with open(file_path, 'r', encoding='utf-8') as file:
+            # Crear un lector CSV que convierte cada fila en un diccionario
+            reader = csv.DictReader(file)
 
-def print_results(program_start_time, program_end_time, file_names, start_times, end_times, results, child_pids, rss=[], vms=[]):
+            # Bloque temporal para acumular registros y controlar la memoria
+            block = []
+
+            # Iterar sobre cada fila del archivo CSV
+            for row in reader:
+                # Añadir la fila procesada al bloque temporal
+                block.append({
+                    'title': row['title'],  
+                    'region': region,  
+                    'views': int(row['views']),  
+                    'likes': int(row['likes']),  
+                    'dislikes': int(row['dislikes']) 
+                })
+
+                # Si el bloque alcanza el tamaño definido (default 1024), transferir los datos a la lista principal
+                if len(block) >= chunk_size:
+                    videos.extend(block)  # Agregar los datos del bloque a 'videos'
+                    block.clear()  # Vaciar el bloque para liberar memoria
+
+            # Si quedan registros en el bloque después del bucle, procesarlos también
+            if block:
+                videos.extend(block)
+
+    # Capturar cualquier excepción que ocurra durante la lectura del archivo
+    except Exception as e:
+        # Imprimir un mensaje de error si hay problemas al leer el archivo
+        print(f"Error al leer el archivo {file_path}: {str(e)}")
+
+    # Devolver la lista completa de videos leídos
+    return videos
+
+def analyze_data(videos):
     """
-    Función que imprime los resultados en una tabla.
+    Analiza los videos para encontrar el más y menos popular globalmente y por región.
 
     Args:
-    - program_start_time (float): Tiempo de inicio del programa.
-    - program_end_time (float): Tiempo de finalización del programa.
-    - file_names (list): Lista de nombres de archivos.
-    - start_times (list): Lista de tiempos de inicio de carga de archivos.
-    - end_times (list): Lista de tiempos de finalización de carga de archivos.
-    - results (list): Lista de resultados de la carga de archivos.
+    - videos (list): Lista de videos con su información.
+
+    Returns:
+    - Tuple[dict, dict, dict]: Video más popular, menos popular, y estadísticas por región.
     """
-    total_time = calculate_total_time(program_start_time, program_end_time)
-    headers = ["Nombre", "T. Inicial", "T. Final", "Duración", "Peso", "PID", "RSS", "VMS"]
-    table = []
+    if not videos:
+        return None
 
-    for i, file_name in enumerate(file_names):
-        start_time = get_formatted_time(start_times[i])
-        end_time = get_formatted_time(end_times[i])
-        duration = calculate_total_time(start_times[i], end_times[i])
-        result = results[i] if i < len(results) else "N/A"
-        pid = child_pids[i] if i < len(child_pids) else "N/A"
-        rss_memory = rss[i] if i < len(rss) else "N/A"
-        vms_memory = vms[i] if i < len(vms) else "N/A"
-        table.append([file_name, start_time, end_time, duration, result, pid, rss_memory, vms_memory])
+    most_popular = max(videos, key=lambda x: x['views'])
+    least_popular = min(videos, key=lambda x: x['views'])
 
-    print(tabulate(table, headers=headers, tablefmt="grid"))
-    print(f"\nTiempo total del programa: {total_time:.2f} ms\n")
+    regions = defaultdict(list)
+    for video in videos:
+        regions[video['region']].append(video)
+
+    region_stats = {
+        region: {
+            "most_popular": max(videos_in_region, key=lambda x: x['views']),
+            "least_popular": min(videos_in_region, key=lambda x: x['views'])
+        }
+        for region, videos_in_region in regions.items()
+    }
+
+    return most_popular, least_popular, region_stats
 
 def generate_table():
     """
@@ -111,3 +162,44 @@ def generate_table():
         table.add_row(f"Núcleo {i}", f"{usage:.2f}%")
 
     return table
+
+def print_results(program_start_time, program_end_time, file_names, start_times, end_times, memory_usage, videos):
+    """
+    Imprime un resumen con tiempos, memoria utilizada y análisis de los videos.
+
+    Args:
+    - program_start_time (float): Tiempo de inicio del programa.
+    - program_end_time (float): Tiempo de finalización del programa.
+    - file_names (list): Lista de nombres de archivos.
+    - start_times (list): Lista de tiempos de inicio de carga de archivos.
+    - end_times (list): Lista de tiempos de finalización de carga de archivos.
+    - memory_usage (list): Uso de memoria por archivo.
+    - videos (list): Lista de videos leídos para el análisis.
+    """
+    total_time = calculate_total_time(program_start_time, program_end_time)
+    headers = ["Nombre", "T. Inicial", "T. Final", "Duración (ms)", "Memoria (MB)"]
+    table = []
+
+    for i, file_name in enumerate(file_names):
+        start_time = get_formatted_time(start_times[i])
+        end_time = get_formatted_time(end_times[i])
+        duration = calculate_total_time(start_times[i], end_times[i])
+        memory = memory_usage[i] if i < len(memory_usage) else "N/A"
+        table.append([file_name, start_time, end_time, duration, memory])
+
+    print(tabulate(table, headers=headers, tablefmt="grid"))
+    print(f"\nTiempo total del programa: {total_time / 1000:.2f} segundos\n")
+
+    # Analizar los datos
+    most_popular, least_popular, region_stats = analyze_data(videos)
+
+    if most_popular and least_popular:
+        print("\nResultados del análisis de videos:")
+        print(f"📈 Video más popular del año: '{most_popular['title']}' con {most_popular['views']} vistas.")
+        print(f"📉 Video menos popular del año: '{least_popular['title']}' con {least_popular['views']} vistas.")
+
+        print("\nVideos más y menos populares por región:")
+        for region, stats in region_stats.items():
+            print(f"\n🌎 Región: {region}")
+            print(f"  - 📈 Más popular: '{stats['most_popular']['title']}' ({stats['most_popular']['views']} vistas)")
+            print(f"  - 📉 Menos popular: '{stats['least_popular']['title']}' ({stats['least_popular']['views']} vistas)")
