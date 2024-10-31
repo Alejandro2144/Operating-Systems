@@ -1,5 +1,6 @@
 import time
-import multiprocessing
+import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
 from utils import (
     get_formatted_time, print_results, generate_table,
     get_file_paths, read_file_in_chunks, monitor_memory
@@ -27,7 +28,7 @@ def process_file(file_path):
 
 def load_files_single_core(folder_path):
     """
-    Carga y procesa archivos en paralelo utilizando un solo núcleo.
+    Carga y procesa archivos en paralelo utilizando un solo núcleo, un solo proceso y múltiples hilos.
 
     Args:
         folder_path (str): Ruta del directorio que contiene los archivos a procesar.
@@ -42,11 +43,16 @@ def load_files_single_core(folder_path):
     program_start_time = time.time()
     print(f'\nHora de inicio del programa: {get_formatted_time(program_start_time)}\n')
 
+    results = []
     with Live(console=console, refresh_per_second=4, screen=False) as live:
-        with multiprocessing.Pool(processes = len(file_paths)) as pool:
-            results = pool.map(process_file, file_paths)
-        
-        live.update(generate_table())
+        with ThreadPoolExecutor() as executor:
+            # Se envían los archivos a procesar al executor
+            future_to_file = {executor.submit(process_file, file_path): file_path for file_path in file_paths}
+
+            # Recolecta los resultados a medida que se completan
+            for future in concurrent.futures.as_completed(future_to_file):
+                results.append(future.result())
+                live.update(generate_table())
 
     program_end_time = time.time()
 

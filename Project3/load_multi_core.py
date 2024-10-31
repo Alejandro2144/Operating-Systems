@@ -1,5 +1,4 @@
 import time
-import multiprocessing
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from utils import (
     get_formatted_time, print_results, generate_table,
